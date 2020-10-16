@@ -1,0 +1,31 @@
+TRUNCATE categories,questions RESTART IDENTITY;
+
+INSERT INTO categories (type) VALUES ('Science');
+INSERT INTO categories (type) VALUES ('Art');
+INSERT INTO categories (type) VALUES ('Geography');
+INSERT INTO categories (type) VALUES ('History');
+INSERT INTO categories (type) VALUES ('Entertainment');
+INSERT INTO categories (type) VALUES ('Sports');
+
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Whose autobiography is entitled ''I Know Why the Caged Bird Sings''?','Maya Angelou',2,4);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('What boxer''s original name is Cassius Clay?','Muhammad Ali',1,4);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('What movie earned Tom Hanks his third straight Oscar nomination, in 1996?','Apollo 13',4,5);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?','Tom Cruise',4,5);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?','Edward Scissorhands',3,5);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Which is the only team to play in every soccer World Cup tournament?','Brazil',3,6);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Which country won the first ever soccer World Cup in 1930?','Uruguay',4,6);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Who invented Peanut Butter?','George Washington Carver',2,4);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('What is the largest lake in Africa?','Lake Victoria',2,3);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('In which royal palace would you find the Hall of Mirrors?','The Palace of Versailles',3,3);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('The Taj Mahal is located in which Indian city?','Agra',2,3);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Which Dutch graphic artist–initials M C was a creator of optical illusions?','Escher',1,2);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('La Giaconda is better known as what?','Mona Lisa',3,2);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('How many paintings did Van Gogh sell in his lifetime?','One',4,2);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?','Jackson Pollock',2,2);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('What is the heaviest organ in the human body?','The Liver',4,1);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Who discovered penicillin?','Alexander Fleming',3,1);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Hematology is a branch of medicine involving the study of what?','Blood',4,1);
+INSERT INTO questions (question,answer,difficulty,category) VALUES ('Which dung beetle was worshipped by the ancient Egyptians?','Scarab',4,4);
+
+curl -X POST -H "Content-Type: application/json" -d '{"search":"Hematology is a branch"}' http://127.0.0.1:5000/questions
+curl -X GET http://127.0.0.1:5000/questions/1
