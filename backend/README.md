@@ -42,9 +42,10 @@ From within the `backend` directory first ensure you are working using your crea
 
 To run the server, execute:
 
+For windows : 
 ```bash
-export FLASK_APP=flaskr
-export FLASK_ENV=development
+set FLASK_APP=flaskr
+set FLASK_ENV=development
 flask run
 ```
 
@@ -66,26 +67,251 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
-REVIEW_COMMENT
+## Endpoints
+
+### GET /categories
+
+- Returns a dictionary of categories and success value.
+
+#### Sample
+
+`curl -X GET http://127.0.0.1:5000/categories`
+
 ```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
+"categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "success": true
+}
+```
 
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
+### GET /categories/category_id/questions
 
-GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Returns a current category, list of questions in the given category, success value, and total number of questions
+- Results are paginated in group of 10. Include a request argument to choose page number, starting from 1.
+- Error of status code 404 will be thrown when there is no question on the given page.
+
+#### Sample
+
+`curl -X GET http://127.0.0.1:5000/categories/1/questions?page=2`
+
+```
+"current_category": {
+    "id": 1,
+    "type": "Science"
+  },
+  "questions": [
+    {
+      "answer": "The Liver",
+      "category": "1",
+      "difficulty": 4,
+      "id": 16,
+      "question": "What is the heaviest organ in the human body?"
+    },
+    {
+      "answer": "Alexander Fleming",
+      "category": "1",
+      "difficulty": 3,
+      "id": 17,
+      "question": "Who discovered penicillin?"
+    },
+    {
+      "answer": "Blood",
+      "category": "1",
+      "difficulty": 4,
+      "id": 18,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    }
+  ],
+  "success": true,
+  "total_questions": 3
+}
+```
+
+### GET /questions
+
+- Returns a dictionary of categories, a list of questions,current category = `null`, success value and total number of questions.
+- Results are paginated in group of 10. Include a request argument to choose page number, starting from 1.
+- Error of status code 404 will be thrown when there is no question on the given page.
+
+#### Sample
+
+`curl -X GET http://127.0.0.1:5000/questions?page=2`
+
+```
+"categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "current_category": null,
+  "questions": [
+    {
+      "answer": "Agra",
+      "category": "3",
+      "difficulty": 2,
+      "id": 11,
+      "question": "The Taj Mahal is located in which Indian city?"
+    },
+    {
+      "answer": "Escher",
+      "category": "2",
+      "difficulty": 1,
+      "id": 12,
+      "question": "Which Dutch graphic artist-initials M C was a creator of optical illusions?"
+    },
+    {
+      "answer": "Mona Lisa",
+      "category": "2",
+      "difficulty": 3,
+      "id": 13,
+      "question": "La Giaconda is better known as what?"
+    },
+    {
+      "answer": "One",
+      "category": "2",
+      "difficulty": 4,
+      "id": 14,
+      "question": "How many paintings did Van Gogh sell in his lifetime?"
+    },
+    {
+      "answer": "Jackson Pollock",
+      "category": "2",
+      "difficulty": 2,
+      "id": 15,
+      "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+    },
+    {
+      "answer": "The Liver",
+      "category": "1",
+      "difficulty": 4,
+      "id": 16,
+      "question": "What is the heaviest organ in the human body?"
+    },
+    {
+      "answer": "Alexander Fleming",
+      "category": "1",
+      "difficulty": 3,
+      "id": 17,
+      "question": "Who discovered penicillin?"
+    },
+    {
+      "answer": "Blood",
+      "category": "1",
+      "difficulty": 4,
+      "id": 18,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    },
+    {
+      "answer": "Scarab",
+      "category": "4",
+      "difficulty": 4,
+      "id": 19,
+      "question": "Which dung beetle was worshipped by the ancient Egyptians?"
+    }
+  ],
+  "success": true,
+  "total_questions": 19
+}
+```
+
+### POST /questions
+
+#### Create Question
+- Creates a new question when submitted question is click on, should be fill question, answer, difficulty and category.
+- Returns all paremeters of created question and success value.
+- Error of status code 405 will be thrown when there is no paremeter filled on the new question.
+
+#### Sample
+
+`curl -X POST http://127.0.0.1:5000/questions -H "Content-Type: application/json" -d '{"question":"Who Won world cup 2018?","answer":"France","difficulty":2,"category":6}'` 
+
+```
+{
+"answer": "France",
+  "category": "6",
+  "difficulty": 2,
+  "question": "Who Won world cup 2018?",
+  "success": true
+}
+```
+
+### POST /questions/search
+
+#### Search Question/s
+- if `searchTerm` is filled in json body, that will return question/s in case sensisitive with database values, if `searchTerm` is not filled, that will returns all questions, and return current category, success value and total_questions.
+- Error of status code 404 will be thrown if you search for question not included in database.
+
+#### Sample
+
+`curl -X POST -H "Content-Type: application/json" -d '{"searchTerm":"Hematology is a branch"}' http://127.0.0.1:5000/questions/search` 
+
+```
+{
+ "current_category": [
+    "1"
+  ],
+  "questions": [
+    {
+      "answer": "Blood",
+      "category": "1",
+      "difficulty": 4,
+      "id": 18,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    }
+  ],
+  "success": true,
+  "total_questions": 1
+}
+
+```
+
+### DELETE /questions/`question_id`
+
+- Deletes the question at given Id if it exists. Returns the id of the deleted question and success value
+- If the question at given Id does not exist, error of status code 404 is returned.
+
+#### Sample
+
+`curl -X DELETE http://127.0.0.1:5000/questions/20` 
+
+```
+{
+  "id": 5,
+  "success": true
+}
+
+```
+
+### POST /quizzes
+
+- Returns one randomly chosen questions at given category (if specefied) and success value.
+- If `previous_questions` is provided in request body, whey will be excluded from selecting process. 
+- `question` is returned `null` if there is no more questions which has not previously played in the category. 
+
+#### Sample
+
+`curl -X POST http://127.0.0.1:5000/quizzes -H "Content-Type: application/json" -d '{"quiz_category":{"type":"Art","id":2},"previous_questions":[6]}'` 
+
+```
+{
+  "question": {
+    "answer": "Escher",
+    "category": "2",
+    "difficulty": 1,
+    "id": 12,
+    "question": "Which Dutch graphic artist-initials M C was a creator of optical illusions?"
+  },
+  "success": true
+}
 
 ```
 

@@ -157,12 +157,14 @@ def create_app(test_config=None):
     """
     @app.route('/questions', methods=['POST'])
     def create_question():
-        try:
-            body = request.get_json()
-            new_question = body.get('question', None)
-            new_answer = body.get('answer', None)
-            new_difficulty = body.get('difficulty', None)
-            new_category = body.get('category', None)
+        body = request.get_json()
+        new_question = body.get('question', None)
+        new_answer = body.get('answer', None)
+        new_difficulty = body.get('difficulty', None)
+        new_category = body.get('category', None)
+        if (new_question is None or new_answer is None or new_difficulty is None or new_category is None):
+            abort(405)
+        else:
             new_Question = Question(
                 new_question, new_answer, new_category, new_difficulty)
             new_Question.insert()
@@ -173,8 +175,6 @@ def create_app(test_config=None):
                 "difficulty":new_Question.difficulty,
                 "category":new_Question.category
                 })
-        except:
-            abort(422)
 
     """ Endpoint with POST method to search for question/s.
     
@@ -244,11 +244,11 @@ def create_app(test_config=None):
         quiz_category = body.get('quiz_category')
 
         if quiz_category['id'] == 0:
-            available_questions = Question.query.filter(Question.question.notin_(previous_questions)).all()
+            available_questions = Question.query.filter(Question.id.notin_(previous_questions)).all()
         else:
             available_questions = Question.query.filter(Question
             .category==str(quiz_category['id'])
-            ,Question.question.notin_(previous_questions)).all()
+            ,Question.id.notin_(previous_questions)).all()
 
         if len(available_questions)==0:
             question = None
