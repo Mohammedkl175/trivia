@@ -52,21 +52,18 @@ def create_app(test_config=None):
   '''
     @app.route('/categories', methods=['GET'])
     def get_all_categories():
-        try:
-            selection = Category.query.order_by(Category.id).all()
-            All_Categories = [category.format() for category in selection]
-            if len(selection)==0:
-                abort(404)
-            else:
-                categories = {}
-                for category in All_Categories:
-                    categories['{}'.format(category['id'])] = category['type']
-                return jsonify({
-                    "success": True,
-                    "categories": categories
-                    })
-        except:
-            abort(422)
+        selection = Category.query.order_by(Category.id).all()
+        All_Categories = [category.format() for category in selection]
+        if len(selection)==0:
+            abort(404)
+        else:
+            categories = {}
+            for category in All_Categories:
+                categories['{}'.format(category['id'])] = category['type']
+            return jsonify({
+                "success": True,
+                "categories": categories
+                })
 
     '''
   @TODO: 
@@ -82,29 +79,25 @@ def create_app(test_config=None):
   '''
     @app.route('/questions', methods=['GET'])
     def get_all_questions():
-        try:
-            selection = Question.query.order_by(Question.id).all()
-            total_questions = len(selection)
-            questions = paginaite_questions(request, selection)
-            if len(questions) == 0:
-                abort(404)
-            else:
-                query_categories = Category.query.all()
-                All_Categories = [category.format() for category in query_categories]
-                categories = {}
-                for category in All_Categories:
-                    categories['{}'.format(category['id'])] = category['type']
-                current_category = None
-                
-                return jsonify({
-                    "success": True,
-                    "questions": questions,
-                    "total_questions": total_questions,
-                    "categories": categories,
-                    "current_category": current_category
-                    })
-        except:
-            abort(422)
+        selection = Question.query.order_by(Question.id).all()
+        total_questions = len(selection)
+        questions = paginaite_questions(request, selection)
+        if len(questions) == 0:
+            abort(404)
+        else:
+            query_categories = Category.query.all()
+            All_Categories = [category.format() for category in query_categories]
+            categories = {}
+            for category in All_Categories:
+                categories['{}'.format(category['id'])] = category['type']
+            current_category = None
+            return jsonify({
+                "success": True,
+                "questions": questions,
+                "total_questions": total_questions,
+                "categories": categories,
+                "current_category": current_category
+                })
     '''
   @TODO: 
   Create an endpoint to DELETE question using a question ID. 
@@ -114,16 +107,16 @@ def create_app(test_config=None):
   '''
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
-        try:
-            question_to_delete = Question.query.filter_by(
-                id=question_id).one_or_none()
-            if question_to_delete is None:
-                abort(404)
-            else:
-                question_to_delete.delete()
-                return jsonify({"id": question_to_delete.id})
-        except:
-            abort(422)
+        question_to_delete = Question.query.filter_by(id=question_id).one_or_none()
+        if question_to_delete is None:
+            abort(404)
+        else:
+            question_to_delete.delete()
+            return jsonify({
+                "success":True,
+                "id": question_to_delete.id
+                })
+
     '''
   @TODO: 
   Create an endpoint to POST a new question, 

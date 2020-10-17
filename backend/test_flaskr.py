@@ -41,6 +41,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'],True)
         self.assertTrue(data['categories'])
 
+    def test_404_sent_get_category_by_id(self):
+        res=self.client().get('/categories/1')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,404)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'],'Resource Not Found')
+
     def test_get_questions(self):
         res = self.client().get('/questions')
         data = json.loads(res.data)
@@ -53,6 +61,55 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_404_sent_requesting_beyond_valid_page(self):
         res=self.client().get('/questions?page=100',json={'category':'4'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,404)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'],'Resource Not Found')
+
+    def test_search_question_with_correct_data(self):
+        res = self.client().post('/questions',json={'search':'Hematology is a branch'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(len(data['questions']))
+
+    def test_search_question_with_incorrect_data(self):
+        res = self.client().post('/questions',json={'search':'kgkjgkjgk'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertEqual(data['total_questions'],0)
+        self.assertEqual(len(data['questions']),0)
+
+    def test_create_question(self):
+        res = self.client().post('/questions',json={'question':'What is your name','answer':'Mohammed','category':'4','difficulty':4})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'],True)
+    
+    def test_create_question_with_invalid_url(self):
+        res = self.client().post('/questions/2',json={'question':'What is your name','answer':'Mohammed','category':'4','difficulty':4})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,405)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'],'Method Not Allowed')
+
+    def test_delete_question_with_correct_id(self):
+        res = self.client().delete('/questions/6')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertEqual(data['id'],6)
+
+    def test_delete_question_with_incorrect_id(self):
+        res = self.client().delete('/questions/20')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code,404)
