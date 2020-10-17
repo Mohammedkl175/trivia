@@ -237,6 +237,15 @@ def create_app(test_config=None):
                 "current_category": currentCategory
                 })
 
+    """ Endpoint with POST method to get questions randomly by category
+    
+    Args:
+       /quizzes: HTTP Response (URL)
+       methods=['POST']: HTTP Response (Method)
+
+    Returns:
+       jsonify(success,question)  
+    """
     @app.route('/quizzes', methods=['POST'])
     def play():
         body = request.get_json()
@@ -251,12 +260,12 @@ def create_app(test_config=None):
                 available_questions = Question.query.filter(Question
                 .category==str(quiz_category['id'])
                 ,Question.id.notin_(previous_questions)).all()
-            
-            if len(available_questions)==0:
-                question = None
-            else:
-                current_question = random.choice(available_questions)
-                question = current_question.format()
+                
+                if len(available_questions)==0:
+                    question = None
+                else:
+                    current_question = random.choice(available_questions)
+                    question = current_question.format()
                 return jsonify({
                     "success":True,
                     "question":question

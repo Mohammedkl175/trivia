@@ -168,7 +168,7 @@ class TriviaTestCase(unittest.TestCase):
        success response  
     """
     def test_get_questions_by_correct_category_id(self):
-        res = self.client().get('\categories\1\questions')
+        res = self.client().get('/categories/1/questions')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code,200)
@@ -182,7 +182,7 @@ class TriviaTestCase(unittest.TestCase):
        404 response  
     """
     def test_404_get_questions_by_incorrect_category_id(self):
-        res = self.client().get('\categories\8\questions')
+        res = self.client().get('/categories/8/questions')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code,404)
