@@ -29,9 +29,10 @@ class TriviaTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-    """
-    TODO
-    Write at least one test for each test for successful operation and for expected errors.
+    """ The test function get all categories
+
+    Returns:
+       succeful response  
     """
     def test_get_categories(self):
         res = self.client().get('/categories')
@@ -40,7 +41,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code,200)
         self.assertEqual(data['success'],True)
         self.assertTrue(data['categories'])
+        
+    """ The test function get category by id
 
+    Returns:
+       404 response  
+    """
     def test_404_sent_get_category_by_id(self):
         res=self.client().get('/categories/1')
         data = json.loads(res.data)
@@ -49,6 +55,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'],False)
         self.assertEqual(data['message'],'Resource Not Found')
 
+    """ The test function get all questions
+
+    Returns:
+       succeful response  
+    """
     def test_get_questions(self):
         res = self.client().get('/questions')
         data = json.loads(res.data)
@@ -59,6 +70,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertEqual(data['current_category'],None)
 
+    """ The test function get questions by valid page
+
+    Returns:
+       404 response  
+    """
     def test_404_sent_requesting_beyond_valid_page(self):
         res=self.client().get('/questions?page=100',json={'category':'4'})
         data = json.loads(res.data)
@@ -67,6 +83,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'],False)
         self.assertEqual(data['message'],'Resource Not Found')
 
+    """ The test function search question/s by correct data
+
+    Returns:
+       succeful response  
+    """
     def test_search_question_with_correct_data(self):
         res = self.client().post('/questions/search',json={'searchTerm':'Hematology is a branch'})
         data = json.loads(res.data)
@@ -76,6 +97,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertTrue(len(data['questions']))
 
+    """ The test function search question/s by incorrect data
+
+    Returns:
+       succeful response  
+    """
     def test_search_question_with_incorrect_data(self):
         res = self.client().post('/questions/search',json={'searchTerm':'kgkjgkjgk'})
         data = json.loads(res.data)
@@ -85,6 +111,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['total_questions'],0)
         self.assertEqual(len(data['questions']),0)
 
+    """ The test function create question by valid URL
+
+    Returns:
+       succeful response  
+    """
     def test_create_question(self):
         res = self.client().post('/questions',json={'question':'What is your name','answer':'Mohammed','category':'4','difficulty':4})
         data = json.loads(res.data)
@@ -92,7 +123,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code,200)
         self.assertEqual(data['success'],True)
     
-    def test_create_question_with_invalid_url(self):
+    """ The test function create question by invalid URL
+
+    Returns:
+       405 response  
+    """
+    def test_405_create_question_with_invalid_url(self):
         res = self.client().post('/questions/2',json={'question':'What is your name','answer':'Mohammed','category':'4','difficulty':4})
         data = json.loads(res.data)
 
@@ -100,6 +136,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'],False)
         self.assertEqual(data['message'],'Method Not Allowed')
 
+    """ The test function delete question by correct id
+
+    Returns:
+       succeful response  
+    """
     def test_delete_question_with_correct_id(self):
         res = self.client().delete('/questions/6')
         data = json.loads(res.data)
@@ -108,7 +149,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'],True)
         self.assertEqual(data['id'],6)
 
-    def test_delete_question_with_incorrect_id(self):
+    """ The test function delete question by incorrect id
+
+    Returns:
+       404 response  
+    """
+    def test_404_delete_question_with_incorrect_id(self):
         res = self.client().delete('/questions/20')
         data = json.loads(res.data)
 
@@ -116,6 +162,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'],False)
         self.assertEqual(data['message'],'Resource Not Found')
 
+    """ The test function get questions by correct category Id
+
+    Returns:
+       success response  
+    """
     def test_get_questions_by_correct_category_id(self):
         res = self.client().get('\categories\1\questions')
         data = json.loads(res.data)
@@ -125,7 +176,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['questions']))
         self.assertTrue(data['total_questions'])
 
-    def test_get_questions_by_incorrect_category_id(self):
+    """ The test function get questions by incorrect category Id
+
+    Returns:
+       404 response  
+    """
+    def test_404_get_questions_by_incorrect_category_id(self):
         res = self.client().get('\categories\8\questions')
         data = json.loads(res.data)
 
