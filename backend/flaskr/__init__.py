@@ -144,12 +144,15 @@ def create_app(test_config=None):
             new_category = body.get('category', None)
             search = body.get('search', None)
             if search:
-                questions = Question.query.filter(
+                questions_query = Question.query.filter(
                     Question.question.ilike('%{}%'.format(search))).all()
-                results = paginaite_questions(request, questions)
+                questions = paginaite_questions(request, questions_query)
+                total_questions = len(questions_query)
                 return jsonify({
                     "success": True,
-                    "questions": results
+                    "questions": questions,
+                    "total_questions":total_questions,
+                    "current_category":None
                 })
             else:
                 new_Question = Question(
@@ -157,7 +160,10 @@ def create_app(test_config=None):
                 new_Question.insert()
                 return jsonify({
                     "success": True,
-                    "new question": new_Question.format()
+                    "question": new_Question.question,
+                    "answer":new_Question.answer,
+                    "difficulty":new_Question.difficulty,
+                    "category":new_Question.category
                 })
         except:
             abort(422)
@@ -181,12 +187,15 @@ def create_app(test_config=None):
             new_category = body.get('category', None)
             search = body.get('search', None)
             if search:
-                questions = Question.query.filter(
+                questions_query = Question.query.filter(
                     Question.question.ilike('%{}%'.format(search))).all()
-                results = paginaite_questions(request, questions)
+                questions = paginaite_questions(request, questions_query)
+                total_questions = len(questions_query)
                 return jsonify({
                     "success": True,
-                    "questions": results
+                    "questions": questions,
+                    "total_questions":total_questions,
+                    "current_category":None
                 })
             else:
                 new_Question = Question(
@@ -194,7 +203,10 @@ def create_app(test_config=None):
                 new_Question.insert()
                 return jsonify({
                     "success": True,
-                    "new question": new_Question.format()
+                    "question": new_Question.question,
+                    "answer":new_Question.answer,
+                    "difficulty":new_Question.difficulty,
+                    "category":new_Question.category
                 })
         except:
             abort(422)
@@ -212,25 +224,19 @@ def create_app(test_config=None):
             selection = Question.query.filter(
                 Question.category == str(category_id)).all()
             if selection[0] is None:
-                abort(400)
+                abort(404)
             else:
                 questions = [question.format() for question in selection]
                 query_categories = Category.query.all()
                 total_questions = len(selection)
-                All_Categories = [category.format()
-                                  for category in query_categories]
-                categories = {}
-                for category in All_Categories:
-                    categories['{}'.format(
-                        category['id'])] = category['type']
-
-            return jsonify({
-                "success": True,
-                "questions": questions,
-                "totalQuestions": total_questions,
-                "categories": categories,
-                "currentCategory": None
-            })
+                category = Category.query.filter(Category.id==category_id).one_or_none()
+                currentCategory = category.format()
+                return jsonify({
+                    "success": True,
+                    "questions": questions,
+                    "totalQuestions": total_questions,
+                    "current_category": currentCategory
+                    })
         except:
             abort(422)
 
