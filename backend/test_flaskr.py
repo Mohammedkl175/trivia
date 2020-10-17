@@ -128,8 +128,8 @@ class TriviaTestCase(unittest.TestCase):
     Returns:
        405 response  
     """
-    def test_405_create_question_with_invalid_url(self):
-        res = self.client().post('/questions/2',json={'question':'What is your name','answer':'Mohammed','category':'4','difficulty':4})
+    def test_405_create_question_with_missing_data(self):
+        res = self.client().post('/questions',json={'answer':'Mohammed','category':'4','difficulty':4})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code,405)
@@ -189,6 +189,31 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'],False)
         self.assertEqual(data['message'],'Resource Not Found')
 
-# Make the tests conveniently executable
+    """ The test function get question randomly at giving category
+
+    Returns:
+       succeful response  
+    """
+    def test_play(self):
+        res = self.client().post('/quizzes',json={"quiz_category":{"type":"Art","id":2},"previous_questions":[6]})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertTrue(len(data['question']))
+
+    """ The test function get question randomly at giving category with missing data
+
+    Returns:
+       405 response  
+    """
+    def test_play_with_invalid_url(self):
+        res = self.client().post('/quizzes',json={"previous_questions":[6]})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,405)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'],'Method Not Allowed')
+    
 if __name__ == "__main__":
     unittest.main()

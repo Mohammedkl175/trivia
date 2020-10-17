@@ -27,6 +27,3 @@ INSERT INTO questions (question,answer,difficulty,category) VALUES ('Who discove
 INSERT INTO questions (question,answer,difficulty,category) VALUES ('Hematology is a branch of medicine involving the study of what?','Blood',4,1);
 INSERT INTO questions (question,answer,difficulty,category) VALUES ('Which dung beetle was worshipped by the ancient Egyptians?','Scarab',4,4);
 
-curl -X POST -H "Content-Type: application/json" -d '{"searchTerm":"Hematology is a branch"}' http://127.0.0.1:5000/questions/search
-curl -X GET http://127.0.0.1:5000/questions/1
-curl -X POST http://127.0.0.1:5000/quizzes -H "Content-Type: application/json" -d '{"quiz_category":{"type":"Art","id":2},"previous_questions":[6]}

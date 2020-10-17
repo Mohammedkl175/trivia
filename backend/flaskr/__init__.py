@@ -240,25 +240,27 @@ def create_app(test_config=None):
     @app.route('/quizzes', methods=['POST'])
     def play():
         body = request.get_json()
-        previous_questions = body.get('previous_questions')
-        quiz_category = body.get('quiz_category')
-
-        if quiz_category['id'] == 0:
-            available_questions = Question.query.filter(Question.id.notin_(previous_questions)).all()
+        previous_questions = body.get('previous_questions',None)
+        quiz_category = body.get('quiz_category',None)
+        if previous_questions is None or quiz_category is None:
+            abort(405)
         else:
-            available_questions = Question.query.filter(Question
-            .category==str(quiz_category['id'])
-            ,Question.id.notin_(previous_questions)).all()
-
-        if len(available_questions)==0:
-            question = None
-        else:
-            current_question = random.choice(available_questions)
-            question = current_question.format()
-        return jsonify({
-            "success":True,
-            "question":question
-        })
+            if quiz_category['id'] == 0:
+                available_questions = Question.query.filter(Question.id.notin_(previous_questions)).all()
+            else:
+                available_questions = Question.query.filter(Question
+                .category==str(quiz_category['id'])
+                ,Question.id.notin_(previous_questions)).all()
+            
+            if len(available_questions)==0:
+                question = None
+            else:
+                current_question = random.choice(available_questions)
+                question = current_question.format()
+                return jsonify({
+                    "success":True,
+                    "question":question
+                    })
 
     """ Endpoints with error handler to return specific data about error
     
