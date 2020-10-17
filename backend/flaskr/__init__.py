@@ -135,28 +135,15 @@ def create_app(test_config=None):
             new_answer = body.get('answer', None)
             new_difficulty = body.get('difficulty', None)
             new_category = body.get('category', None)
-            search = body.get('search', None)
-            if search:
-                questions_query = Question.query.filter(
-                    Question.question.ilike('%{}%'.format(search))).all()
-                questions = paginaite_questions(request, questions_query)
-                total_questions = len(questions_query)
-                return jsonify({
-                    "success": True,
-                    "questions": questions,
-                    "total_questions":total_questions,
-                    "current_category":None
-                })
-            else:
-                new_Question = Question(
-                    new_question, new_answer, new_category, new_difficulty)
-                new_Question.insert()
-                return jsonify({
-                    "success": True,
-                    "question": new_Question.question,
-                    "answer":new_Question.answer,
-                    "difficulty":new_Question.difficulty,
-                    "category":new_Question.category
+            new_Question = Question(
+                new_question, new_answer, new_category, new_difficulty)
+            new_Question.insert()
+            return jsonify({
+                "success": True,
+                "question": new_Question.question,
+                "answer":new_Question.answer,
+                "difficulty":new_Question.difficulty,
+                "category":new_Question.category
                 })
         except:
             abort(422)
@@ -170,36 +157,21 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
-    @app.route('/questions', methods=['POST'])
+    @app.route('/questions/search', methods=['POST'])
     def search_question():
         try:
             body = request.get_json()
-            new_question = body.get('question', None)
-            new_answer = body.get('answer', None)
-            new_difficulty = body.get('difficulty', None)
-            new_category = body.get('category', None)
-            search = body.get('search', None)
-            if search:
-                questions_query = Question.query.filter(
-                    Question.question.ilike('%{}%'.format(search))).all()
-                questions = paginaite_questions(request, questions_query)
-                total_questions = len(questions_query)
-                return jsonify({
-                    "success": True,
-                    "questions": questions,
-                    "total_questions":total_questions,
-                    "current_category":None
-                })
-            else:
-                new_Question = Question(
-                    new_question, new_answer, new_category, new_difficulty)
-                new_Question.insert()
-                return jsonify({
-                    "success": True,
-                    "question": new_Question.question,
-                    "answer":new_Question.answer,
-                    "difficulty":new_Question.difficulty,
-                    "category":new_Question.category
+            search = body.get('searchTerm',' ')
+            questions_query = Question.query.filter(
+                Question.question.ilike('%{}%'.format(search))).all()
+            questions = paginaite_questions(request,questions_query)
+            total_questions = len(questions_query)
+            current_category = [question['category'] for question in questions]
+            return jsonify({
+                "success": True,
+                "questions": questions,
+                "total_questions":total_questions,
+                "current_category": current_category
                 })
         except:
             abort(422)
@@ -242,14 +214,26 @@ def create_app(test_config=None):
   '''
     @app.route('/quizzes', methods=['POST'])
     def play():
-        # body = request.get_json()
-        # previousQuestions = body.get('previousQuestions',None)
-        # categories = body.get('categories',None)
-        # selection = Question.query.filter(Question.question != previousQuestions).all()
-        # current_question = (random.choice(selection)).format()
-        # return jsonify({"previous id": question_id,
-        #                 "new question": post_question})
-        return jsonify({})
+        body = request.get_json()
+        previousQuestions = body.get('previousQuestions')
+        category = body.get('quizCategory',None)
+
+        if category is None:
+            available_questions = Question.query.filter(~Question.question.in_(previousQuestions)).all()
+        else:
+            available_questions = Question.query.filter(Question
+            .category==str(category['id'])
+            ,~Question.question.in_(previousQuestions)).all()
+
+        if len(available_questions)==0:
+            question = None
+        else:
+            current_question = random.choice(available_questions)
+            question = current_question.format()
+        return jsonify({
+            "success":True,
+            "question":question
+        })
     '''
     @TODO: 
     Create error handlers for all expected errors 

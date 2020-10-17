@@ -68,7 +68,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'],'Resource Not Found')
 
     def test_search_question_with_correct_data(self):
-        res = self.client().post('/questions',json={'search':'Hematology is a branch'})
+        res = self.client().post('/questions/search',json={'searchTerm':'Hematology is a branch'})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code,200)
@@ -77,7 +77,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['questions']))
 
     def test_search_question_with_incorrect_data(self):
-        res = self.client().post('/questions',json={'search':'kgkjgkjgk'})
+        res = self.client().post('/questions/search',json={'searchTerm':'kgkjgkjgk'})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code,200)
