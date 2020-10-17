@@ -116,6 +116,23 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'],False)
         self.assertEqual(data['message'],'Resource Not Found')
 
+    def test_get_questions_by_correct_category_id(self):
+        res = self.client().get('\categories\1\questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
+
+    def test_get_questions_by_incorrect_category_id(self):
+        res = self.client().get('\categories\8\questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,404)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'],'Resource Not Found')
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
